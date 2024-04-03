@@ -1,5 +1,6 @@
 import ccxt  # noqa: E402
 import json
+import pandas as pd
 
 import os
 from dotenv import load_dotenv
@@ -32,3 +33,11 @@ class BinanceClient:
         # output json
         with open('./data/balances.json', 'w') as f:
             json.dump(balance, f)
+
+    def get_ohlc(self,symbol,timeframe):
+        ohlcv = self.con.fetch_ohlcv(symbol, timeframe)
+        df=pd.DataFrame(ohlcv).rename({0:'timestamp', 1:'open', 2:'high', 3:'low', 4:'close', 5:'volume'},axis=1)
+        df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+        df['timestamp'] = df['timestamp'].dt.tz_localize('UTC').dt.tz_convert('US/Eastern') #convert to UTC to EST
+        df['datetime'] = df['timestamp'].dt.strftime('%Y-%m-%d %H:%M:%S')
+        return df
