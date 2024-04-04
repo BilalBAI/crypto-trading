@@ -1,15 +1,15 @@
 [
     {
         "params": {
-            "tokenIn": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
-            "tokenOut": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-            "fee": 100,
-            "recipient": "0x628FFB981462Cc13DA4Df16aB4c38EF0131e5b52",
-            "deadline": 1712247466,
-            "amountIn": 5086053177148634573976,
-            "amountOutMinimum": 5086726092,
+            "tokenIn": "0xd8F1460044925d2D5c723C7054cd9247027415B7",
+            "tokenOut": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+            "fee": 10000,
+            "recipient": "0xf3F32E156E95c6249AA646c86855306F913bFF34",
+            "deadline": 1712257062,
+            "amountIn": 24999999999999997902848,
+            "amountOutMinimum": 97948493064137477,
             "sqrtPriceLimitX96": 0
         },
-        "timestamp": "2024-04-04T11:57:51.709076"
+        "timestamp": "2024-04-04T14:48:00.737256"
     }
 ]
