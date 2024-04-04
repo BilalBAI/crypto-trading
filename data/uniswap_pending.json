@@ -1,0 +1,15 @@
+[
+    {
+        "params": {
+            "tokenIn": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
+            "tokenOut": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+            "fee": 100,
+            "recipient": "0x628FFB981462Cc13DA4Df16aB4c38EF0131e5b52",
+            "deadline": 1712247466,
+            "amountIn": 5086053177148634573976,
+            "amountOutMinimum": 5086726092,
+            "sqrtPriceLimitX96": 0
+        },
+        "timestamp": "2024-04-04T11:57:51.709076"
+    }
+]

@@ -1,6 +1,8 @@
 import ccxt  # noqa: E402
 import json
+import datetime
 import pandas as pd
+from web3.auto import Web3
 
 import os
 from dotenv import load_dotenv
@@ -46,3 +48,37 @@ class BinanceClient:
             'UTC').dt.tz_convert('US/Eastern')  # convert to UTC to EST
         df['datetime'] = df['timestamp'].dt.strftime('%Y-%m-%d %H:%M:%S')
         return df
+
+
+class EthClient:
+    """
+    https://medium.com/coinmonks/discovering-the-secrets-of-an-ethereum-transaction-64febb00935c
+    """
+    def __init__(self) -> None:
+        wss = "wss://patient-green-putty.quiknode.pro/c5a9ecc0ebed8eb70f75d3e7e8b3737e2fcabe06/"
+        self.web3 = Web3(Web3.WebsocketProvider(wss))
+        print(self.web3.is_connected())
+        self._load_abi_router()
+
+    def _load_abi_router(self):
+        # Uniswap v3 SwapRouter and ABI
+        uniswap_v3_router_add = "0xE592427A0AEce92De3Edee1F18E0157C05861564" 
+        self.uniswap_v3_router = self.web3.to_checksum_address(uniswap_v3_router_add)
+        with open('./abi/uniswap_v3.json', 'r') as f:
+            self.uniswap_v3_abi = json.load(f)
+
+    def get_pending_tx_uniswap(self):
+        pending_block= self.web3.eth.get_block(block_identifier='pending', full_transactions=True)
+        pending_transactions= pending_block['transactions']
+        tx=[i for i in pending_transactions if i['to']==self.uniswap_v3_router]
+        if tx == []:
+            return [], []
+        contract = self.web3.eth.contract(address=self.uniswap_v3_router, abi=self.uniswap_v3_abi)
+        results = []
+        for t in tx:
+            func_obj, func_params = contract.decode_function_input(t["input"])
+            func_params['timestamp'] = datetime.datetime.now().isoformat()
+            results.append(func_params)
+        return func_obj, results
+        
+    
