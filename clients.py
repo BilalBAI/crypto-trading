@@ -8,8 +8,9 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-apiKey = os.getenv('apiKey')
-secret = os.getenv('secret')
+BINANCE_API_KEY = os.getenv('apiKey')
+BINANCE_API_SECRET = os.getenv('secret')
+WSS = os.getenv('wss')
 
 
 class BinanceClient:
@@ -54,33 +55,37 @@ class EthClient:
     """
     https://medium.com/coinmonks/discovering-the-secrets-of-an-ethereum-transaction-64febb00935c
     """
+
     def __init__(self) -> None:
-        wss = "wss://patient-green-putty.quiknode.pro/c5a9ecc0ebed8eb70f75d3e7e8b3737e2fcabe06/"
+        wss = os.getenv('wss')
         self.web3 = Web3(Web3.WebsocketProvider(wss))
         print(self.web3.is_connected())
         self._load_uniswapv3_router()
 
     def _load_uniswapv3_router(self):
         # Load Uniswap v3 SwapRouter address
-        address = "0xE592427A0AEce92De3Edee1F18E0157C05861564" 
-        self.uniswapv3_router_add = address = self.web3.to_checksum_address(address)
+        address = "0xE592427A0AEce92De3Edee1F18E0157C05861564"
+        self.uniswapv3_router_add = address = self.web3.to_checksum_address(
+            address)
         # Load Uniswap v3 SwapRouter ABI
         with open('./abi/uniswapv3_router.json', 'r') as f:
             abi = json.load(f)
-        self.uniswap_v3_router = self.web3.eth.contract(address=address, abi=abi)
-        
+        self.uniswap_v3_router = self.web3.eth.contract(
+            address=address, abi=abi)
+
     def get_pending_tx_uniswap(self):
-        pending_block= self.web3.eth.get_block(block_identifier='pending', full_transactions=True)
-        pending_transactions= pending_block['transactions']
-        tx=[i for i in pending_transactions if i['to']==self.uniswapv3_router_add]
+        pending_block = self.web3.eth.get_block(
+            block_identifier='pending', full_transactions=True)
+        pending_transactions = pending_block['transactions']
+        tx = [i for i in pending_transactions if i['to']
+              == self.uniswapv3_router_add]
         if tx == []:
             return [], []
         results = []
         # Decode
         for t in tx:
-            func_obj, func_params = self.uniswap_v3_router.decode_function_input(t["input"])
+            func_obj, func_params = self.uniswap_v3_router.decode_function_input(
+                t["input"])
             func_params['timestamp'] = datetime.datetime.now().isoformat()
             results.append(func_params)
         return func_obj, results
-        
-    

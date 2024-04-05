@@ -21,4 +21,5 @@ node index.js
 ```bash
 apiKey='{apiKey}'
 secret='{secret}'
+wss='{wss}'
 ```
