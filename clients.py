@@ -39,8 +39,8 @@ class BinanceClient:
         with open('./data/balances.json', 'w') as f:
             json.dump(balance, f)
 
-    def get_ohlc(self, symbol, timeframe):
-        ohlcv = self.con.fetch_ohlcv(symbol, timeframe)
+    def get_ohlcv(self, symbol, timeframe, since=None, limit=None):
+        ohlcv = self.con.fetch_ohlcv(symbol, timeframe, since=since, limit=limit)
         df = pd.DataFrame(ohlcv).rename(
             {0: 'timestamp', 1: 'open', 2: 'high', 3: 'low', 4: 'close', 5: 'volume'}, axis=1)
         df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
