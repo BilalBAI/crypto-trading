@@ -14,19 +14,22 @@ secret = os.getenv('secret')
 
 class BinanceClient:
     def __init__(self) -> None:
+        self.con = ccxt.binance() # General con without account api key, for price fetching etc
+
+    def con_trading_login(self): # login a binance account for trading. use with cautious
         apiKey = os.getenv('apiKey')
         secret = os.getenv('secret')
-        self.con = ccxt.binance({
+        self.con_trading = ccxt.binance({
             'apiKey': apiKey,
             'secret': secret,
             'options': {
                 'defaultType': 'margin',  # spot, future, margin
             },
-        })
+        }) # connect to a binance margin account for trading
 
     def fetch_balance(self):
         # remove 0 balances
-        balance = self.con.fetch_balance()  # time consuming 7s
+        balance = self.con_trading.fetch_balance()  # time consuming 7s
         balance['info']['userAssets'] = [
             i for i in balance['info']['userAssets'] if i['netAsset'] != '0']
         for i in balance.keys():
