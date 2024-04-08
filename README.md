@@ -7,6 +7,8 @@ conda activate crypto-trading
 pip install -r requirements.txt
 pip install python-dotenv
 
+python -m pip install -e .
+
 ```
 ### Build js
 ```bash
