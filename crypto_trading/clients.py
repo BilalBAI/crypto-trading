@@ -16,6 +16,7 @@ WSS = os.getenv('wss')
 class BinanceClient:
     def __init__(self) -> None:
         self.con = ccxt.binance() # General con without account api key, for price fetching etc
+        self.risk_whitelist = ['USDT']
 
     def con_trading_login(self): # login a binance account for trading. use with cautious
         apiKey = os.getenv('apiKey')
@@ -55,10 +56,11 @@ class BinanceClient:
 
     def rms(self,positions,total_invest):
         df = pd.DataFrame(positions)
-        df['mv'] = df.apply(lambda row: row['delta']*self.con.fetch_ticker(f'{row['symbol']}/USDT')['last'] if row['symbol']!='USDT' else row['delta'],axis=1)
-        riskless = ['USDT']
-        self.df_risk_exp = df_risk_exp = df.loc[~df.symbol.isin(riskless)]
-        self.df_cash = df_cash = df.loc[df.symbol.isin(riskless)]
+        df['price'] = df.apply(lambda row: self.con.fetch_ticker(f'{row['symbol']}/USDT')['last'] if row['symbol']!='USDT' else 1,axis=1)
+        df['mv'] = df['delta'] * df['price']
+        risk_whitelist = self.risk_whitelist
+        self.df_risk_exp = df_risk_exp = df.loc[~df.symbol.isin(risk_whitelist)]
+        self.df_cash = df_cash = df.loc[df.symbol.isin(risk_whitelist)]
         # Terminal output
         print(df_risk_exp)
         print(f"GMV: {df_risk_exp.mv.abs().sum():,.2f}")
