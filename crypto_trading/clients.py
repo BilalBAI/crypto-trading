@@ -53,6 +53,26 @@ class BinanceClient:
         df['datetime'] = df['timestamp'].dt.strftime('%Y-%m-%d %H:%M:%S')
         return df
 
+    def rms(self,positions,total_invest):
+        df = pd.DataFrame(positions)
+        df['mv'] = df.apply(lambda row: row['delta']*self.con.fetch_ticker(f'{row['symbol']}/USDT')['last'] if row['symbol']!='USDT' else row['delta'],axis=1)
+        riskless = ['USDT']
+        self.df_risk_exp = df_risk_exp = df.loc[~df.symbol.isin(riskless)]
+        self.df_cash = df_cash = df.loc[df.symbol.isin(riskless)]
+        # Terminal output
+        print(df_risk_exp)
+        print(f"GMV: {df_risk_exp.mv.abs().sum():,.2f}")
+        print(f"NMV: {df_risk_exp.mv.sum():,.2f}")
+
+        print()
+        long = df.loc[df.mv>0,'mv'].sum()
+        short = df.loc[df.mv<0,'mv'].sum()
+        print(f"Total Balance: {long:,.2f}")
+        print(f"Total Liability: {short:,.2f}")
+        print(f"Net Liq: {long+short:,.2f}")
+        print(f"PNL: {long+short-total_invest:,.2f}")
+        print(f"ML: {long/abs(short):,.2f}")
+
 
 class EthClient:
     """
