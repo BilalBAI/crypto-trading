@@ -43,7 +43,8 @@ class BinanceClient:
         # output json
         with open('./data/balances.json', 'w') as f:
             json.dump(balance, f)
-
+        self.positions = pd.DataFrame(balance['info']['userAssets']).rename(columns={'asset':'symbol','netAsset':'delta'})
+        
     def get_ohlcv(self, symbol, timeframe, since=None, limit=None):
         ohlcv = self.con.fetch_ohlcv(symbol, timeframe, since=since, limit=limit)
         df = pd.DataFrame(ohlcv).rename(
