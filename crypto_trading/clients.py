@@ -69,7 +69,6 @@ class BinanceClient:
             risk_whitelist)]
         self.df_cash = df_cash = df.loc[df.symbol.isin(risk_whitelist)]
         # Terminal output
-        print(df_risk_exp)
         print(f"GMV: {df_risk_exp.mv.abs().sum():,.2f}")
         print(f"NMV: {df_risk_exp.mv.sum():,.2f}")
 
