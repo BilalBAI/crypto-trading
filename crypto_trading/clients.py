@@ -85,7 +85,7 @@ class BinanceClient:
             df_risk_exp, self.last_prices[merge_cols], how='left', on='symbol')
         # calc mv and pnl
         df_risk_exp['mv'] = df_risk_exp['delta'] * df_risk_exp['last']
-        df_risk_exp['dailyPNL'] = df_risk_exp['mv'] - \
+        df_risk_exp['24hrsPNL'] = df_risk_exp['mv'] - \
             (df_risk_exp['delta']*df_risk_exp['previousClose'])
         # save data
         self.df_risk_exp = df_risk_exp
@@ -94,19 +94,22 @@ class BinanceClient:
                          ).sum() + df_cash['interest'].sum()
 
         # Terminal output
-        print(f"GMV: {df_risk_exp.mv.abs().sum():,.2f}")
-        print(f"NMV: {df_risk_exp.mv.sum():,.2f}")
-
-        print()
         long = df_risk_exp.loc[df_risk_exp.mv > 0, 'mv'].sum(
         ) + df_cash.loc[df_cash.delta > 0, 'delta'].sum()
         short = df_risk_exp.loc[df_risk_exp.mv < 0, 'mv'].sum(
         ) + df_cash.loc[df_cash.delta < 0, 'delta'].sum()
+
+        print(f"GMV: {df_risk_exp.mv.abs().sum():,.2f}")
+        print(f"NMV: {df_risk_exp.mv.sum():,.2f}")
+        print(f"Total PNL: {long+short-total_invest:,.2f}")
+        print(f"24hrs PNL: {df_risk_exp['24hrsPNL'].sum()}")
+
+        print()
         print(f"Total Balance: {long:,.2f}")
         print(f"Total Liability: {short:,.2f}")
         print(f"Net Liq: {long+short:,.2f}")
-        print(f"PNL: {long+short-total_invest:,.2f}")
         print(f"ML: {long/abs(short):,.2f}")
+        print(f"Interest: {self.interest}")
 
 
 class EthClient:
