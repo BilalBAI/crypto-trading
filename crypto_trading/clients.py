@@ -16,7 +16,8 @@ WSS = os.getenv('wss')
 class BinanceClient:
     def __init__(self) -> None:
         self.con = ccxt.binance()  # General con without account api key, for price fetching etc
-        self.risk_whitelist = ['USDT']
+        self.stablecoins = ['USDT']
+        self.last_prices = []
 
     # login a binance account for trading. use with cautious
     def con_trading_login(self):
@@ -31,8 +32,9 @@ class BinanceClient:
         })  # connect to a binance margin account for trading
 
     def fetch_balance(self):
-        # remove 0 balances
+        # fetch balances
         balance = self.con_trading.fetch_balance()  # time consuming 7s
+        # remove 0 balances
         balance['info']['userAssets'] = [
             i for i in balance['info']['userAssets'] if i['netAsset'] != '0']
         for i in balance.keys():
@@ -44,9 +46,13 @@ class BinanceClient:
         # output json
         with open('./data/balances.json', 'w') as f:
             json.dump(balance, f)
+        # save dataframe
         self.positions = pd.DataFrame(balance['info']['userAssets']).rename(
             columns={'asset': 'symbol', 'netAsset': 'delta'})
-        self.positions.delta = self.positions.delta.astype(float)
+        # convert cols to numeric
+        cols = self.positions.columns.drop('symbol')
+        self.positions[cols] = self.positions[cols].apply(
+            pd.to_numeric, errors='coerce')
 
     def get_ohlcv(self, symbol, timeframe, since=None, limit=None):
         ohlcv = self.con.fetch_ohlcv(
@@ -59,22 +65,43 @@ class BinanceClient:
         df['datetime'] = df['timestamp'].dt.strftime('%Y-%m-%d %H:%M:%S')
         return df
 
+    def update_last_prices(self, symbols: list):
+        symbols = [f'{s}/USDT' for s in symbols]
+        raw_data = self.con.fetch_tickers(symbols)
+        temp = pd.DataFrame(list(raw_data.values()))
+        temp = temp.rename(columns={'symbol': 'pair'})
+        temp['symbol'] = temp['pair'].str.replace('/USDT', '')
+        self.last_prices = temp
+
     def rms(self, positions, total_invest):
         df = pd.DataFrame(positions)
-        df['price'] = df.apply(lambda row: self.con.fetch_ticker(
-            f'{row['symbol']}/USDT')['last'] if row['symbol'] != 'USDT' else 1, axis=1)
-        df['mv'] = df['delta'] * df['price']
-        risk_whitelist = self.risk_whitelist
-        self.df_risk_exp = df_risk_exp = df.loc[~df.symbol.isin(
-            risk_whitelist)]
-        self.df_cash = df_cash = df.loc[df.symbol.isin(risk_whitelist)]
+        # df = df.apply(self._last_price, axis=1)
+        df_risk_exp = df.loc[~df.symbol.isin(self.stablecoins)]
+        df_cash = df.loc[df.symbol.isin(self.stablecoins)]
+        # update last prices and merge to the risk exposures
+        self.update_last_prices(df_risk_exp.symbol.to_list())
+        merge_cols = ['symbol', 'last', 'previousClose', 'percentage']
+        df_risk_exp = pd.merge(
+            df_risk_exp, self.last_prices[merge_cols], how='left', on='symbol')
+        # calc mv and pnl
+        df_risk_exp['mv'] = df_risk_exp['delta'] * df_risk_exp['last']
+        df_risk_exp['dailyPNL'] = df_risk_exp['mv'] - \
+            (df_risk_exp['delta']*df_risk_exp['previousClose'])
+        # save data
+        self.df_risk_exp = df_risk_exp
+        self.df_cash = df_cash
+        self.interest = (df_risk_exp['last'] * df_risk_exp['interest']
+                         ).sum() + df_cash['interest'].sum()
+
         # Terminal output
         print(f"GMV: {df_risk_exp.mv.abs().sum():,.2f}")
         print(f"NMV: {df_risk_exp.mv.sum():,.2f}")
 
         print()
-        long = df.loc[df.mv > 0, 'mv'].sum()
-        short = df.loc[df.mv < 0, 'mv'].sum()
+        long = df_risk_exp.loc[df_risk_exp.mv > 0, 'mv'].sum(
+        ) + df_cash.loc[df_cash.delta > 0, 'delta'].sum()
+        short = df_risk_exp.loc[df_risk_exp.mv < 0, 'mv'].sum(
+        ) + df_cash.loc[df_cash.delta < 0, 'delta'].sum()
         print(f"Total Balance: {long:,.2f}")
         print(f"Total Liability: {short:,.2f}")
         print(f"Net Liq: {long+short:,.2f}")

@@ -1,1 +1,85 @@
-{"info": {"tradeEnabled": true, "transferEnabled": true, "borrowEnabled": true, "marginLevel": "1.3346293", "totalAssetOfBtc": "0.01804765", "totalLiabilityOfBtc": "0.0135226", "totalNetAssetOfBtc": "0.00452506", "userAssets": [{"asset": "BTC", "free": "0", "locked": "0", "borrowed": "0.00598", "interest": "0.00000202", "netAsset": "-0.00598202"}, {"asset": "ARB", "free": "0", "locked": "0", "borrowed": "100", "interest": "0.00225004", "netAsset": "-100.00225004"}, {"asset": "SOL", "free": "0", "locked": "0", "borrowed": "2.0000124", "interest": "0.00046315", "netAsset": "-2.00047555"}, {"asset": "ETH", "free": "0.2629368", "locked": "0", "borrowed": "0", "interest": "0", "netAsset": "0.2629368"}, {"asset": "USDT", "free": "345.34220787", "locked": "0", "borrowed": "43.59593705", "interest": "0.07677488", "netAsset": "301.66949594"}], "collateralMarginLevel": "1.33463117", "totalCollateralValueInUSDT": "1277.87057604", "accountType": "MARGIN_1"}, "BTC": {"BTC": 0.00598202}, "ARB": {"ARB": 100.00225004}, "SOL": {"SOL": 2.00047555}, "ETH": {"ETH": 0.2629368}, "USDT": {"USDT": 43.67271193}, "timestamp": null, "datetime": null, "free": {"free": 345.34220787}, "total": {"total": 345.34220787}, "debt": {"debt": 43.67271193}}
+{
+    "info": {
+        "tradeEnabled": true,
+        "transferEnabled": true,
+        "borrowEnabled": true,
+        "marginLevel": "1.34384188",
+        "totalAssetOfBtc": "0.01804883",
+        "totalLiabilityOfBtc": "0.01343077",
+        "totalNetAssetOfBtc": "0.00461806",
+        "userAssets": [
+            {
+                "asset": "BTC",
+                "free": "0",
+                "locked": "0",
+                "borrowed": "0.00598",
+                "interest": "0.00000238",
+                "netAsset": "-0.00598238"
+            },
+            {
+                "asset": "ARB",
+                "free": "0",
+                "locked": "0",
+                "borrowed": "100",
+                "interest": "0.01409315",
+                "netAsset": "-100.01409315"
+            },
+            {
+                "asset": "SOL",
+                "free": "0",
+                "locked": "0",
+                "borrowed": "2.0000124",
+                "interest": "0.00090868",
+                "netAsset": "-2.00092108"
+            },
+            {
+                "asset": "ETH",
+                "free": "0.2629368",
+                "locked": "0",
+                "borrowed": "0",
+                "interest": "0",
+                "netAsset": "0.2629368"
+            },
+            {
+                "asset": "USDT",
+                "free": "243.28220787",
+                "locked": "102.06",
+                "borrowed": "43.59593705",
+                "interest": "0.12185408",
+                "netAsset": "301.62441674"
+            }
+        ],
+        "collateralMarginLevel": "1.34406101",
+        "totalCollateralValueInUSDT": "1251.99257522",
+        "accountType": "MARGIN_1"
+    },
+    "BTC": {
+        "BTC": 0.00598238
+    },
+    "ARB": {
+        "ARB": 100.01409315
+    },
+    "SOL": {
+        "SOL": 2.00092108
+    },
+    "ETH": {
+        "ETH": 0.2629368
+    },
+    "USDT": {
+        "USDT": 43.71779113
+    },
+    "timestamp": null,
+    "datetime": null,
+    "free": {
+        "free": 243.28220787
+    },
+    "used": {
+        "used": 102.06
+    },
+    "total": {
+        "total": 345.34220787
+    },
+    "debt": {
+        "debt": 43.71779113
+    }
+}
