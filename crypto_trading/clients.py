@@ -20,14 +20,15 @@ class BinanceClient:
         self.last_prices = []
 
     # login a binance account for trading. use with cautious
-    def con_trading_login(self):
+    def con_trading_login(self, defaultType='margin'):
+        # defaultType = [spot, future, margin]
         apiKey = os.getenv('apiKey')
         secret = os.getenv('secret')
         self.con_trading = ccxt.binance({
             'apiKey': apiKey,
             'secret': secret,
             'options': {
-                'defaultType': 'margin',  # spot, future, margin
+                'defaultType': defaultType,  # spot, future, margin
             },
         })  # connect to a binance margin account for trading
 
