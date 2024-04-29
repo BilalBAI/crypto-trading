@@ -122,7 +122,6 @@ class EthClient:
         wss = os.getenv('wss')
         self.web3 = Web3(Web3.WebsocketProvider(wss))
         print(self.web3.is_connected())
-        self._load_uniswapv3_router()
 
     def _load_uniswapv3_router(self):
         # Load Uniswap v3 SwapRouter address
@@ -138,6 +137,7 @@ class EthClient:
     def get_pending_tx_uniswap(self):
         pending_block = self.web3.eth.get_block(
             block_identifier='pending', full_transactions=True)
+        # 'latest', 'earliest', 'pending', 'safe', 'finalized'
         pending_transactions = pending_block['transactions']
         tx = [i for i in pending_transactions if i['to']
               == self.uniswapv3_router_add]
