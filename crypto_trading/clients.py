@@ -67,12 +67,15 @@ class BinanceClient:
         return df
 
     def update_last_prices(self, symbols: list):
-        symbols = [f'{s}/USDT' for s in symbols]
-        raw_data = self.con.fetch_tickers(symbols)
-        temp = pd.DataFrame(list(raw_data.values()))
+        tickers = [f'{s}/USDT' for s in symbols]
+        temp = self.fetch_tickers(tickers)
         temp = temp.rename(columns={'symbol': 'pair'})
         temp['symbol'] = temp['pair'].str.replace('/USDT', '')
         self.last_prices = temp
+
+    def fetch_tickers(self, tickers: list):
+        raw_data = self.con.fetch_tickers(tickers)
+        return pd.DataFrame(list(raw_data.values()))
 
     def rms(self, positions, total_invest):
         df = pd.DataFrame(positions)
